@@ -4,6 +4,7 @@
 #define NOMBRE_VALIDO "AngelRdz"
 #define NUMERO_DE_TARJETA_VALIDO "226699"
 #define PIN_VALIDO "1234"
+#define SALDO_INICIAL 10000
 
 
 void capturarDatos(char nombre[], char numeroTarjeta[], int pin, int i){
@@ -49,8 +50,84 @@ void capturarDatos(char nombre[], char numeroTarjeta[], int pin, int i){
     }
     
 }
-void mostrarMenu() {
-    
+
+void mostrarMenu(int opcion, float retiro, float saldoActual, int masOpciones) {
+    printf("----Ingrese el numero de opcion que desee realizar---- \n");
+    printf("1. Consultar su saldo\n");
+    printf("2. Mostrar las transacciones recientes\n");
+    printf("3. Retirar dinero\n");
+    printf("4. Salir y cerrar sesion\n");
+    printf("5. Mas opciones\n");
+    scanf("%d", &opcion);
+
+    switch (opcion) {
+        case 1:
+            printf("----Consulta de saldo----\t");
+            printf("Su saldo actual es de: %0.2f\n", SALDO_INICIAL);
+            break;
+
+        case 2:
+            printf("----Mostrar transacciones recientes----\n");
+
+            break;
+
+        case 3:
+            printf("----Retirar dinero----\t");
+            printf("Ingrese la cantidad  de dinero que desea retirar, usted cuenta con: %f\n", SALDO_INICIAL);
+            scanf("%f", &retiro);
+
+            retiro -= SALDO_INICIAL;
+            saldoActual = SALDO_INICIAL - retiro;
+
+            printf("Usted ha retirado: %0.2f\n, y su saldo actual es de %0.2f\n ", retiro, saldoActual);
+
+            if (retiro > SALDO_INICIAL)
+            {
+             printf("Usted no cuenta con el dinero suficiente para realizar esta opcion");
+            }
+            break;
+
+        case 4:
+            printf("----Salir y cerrar sesion----\t");
+            printf("Gracias por usar CodexBank, su banco de confianzza\n");
+            printf("Cerrando sesion...\n");
+            return;
+            break;
+
+        case 5:
+
+            printf("----Mas opciones----\t");
+            printf("1. Cambiar su pin\n");
+            printf("2. Registrar su numero de telefono\n");
+            printf("3. Generar un estado de cuenta detallado\n");
+            printf("4. Regresar al menu principal\n");
+
+            switch (masOpciones)
+            {
+            case 1:
+                /* code */
+                break;
+            case 2:
+                /* code */
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            
+            default:
+                break;
+            }
+            break;
+
+        default:
+            printf("Por favor seleccione una opcion dentro del rango (1-5)");
+            return;
+            break;
+            
+    }
 }
 
 void consultarSaldo(float saldo) {
