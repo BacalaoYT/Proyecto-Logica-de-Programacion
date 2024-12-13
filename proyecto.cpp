@@ -4,20 +4,26 @@
 #include <windows.h>
 
 // DATOS FIJOS
-#define NOMBRE_VALIDO "AngelRdz"
+#define NOMBRE_VALIDO "AngelRodriguez"
 #define NUMERO_DE_TARJETA_VALIDO "226699"
 #define PIN_VALIDO 1234
 #define MAXIMO_DE_TRANSACCIONES 10
 
 int pin_valido = PIN_VALIDO;
-float saldo = 10000;
-char numeroTelefono[20] = "";// Vacio ya que no hay por el momento un numero de telefono asignado
+float saldo = 1000;
+char numeroTelefono[20] = ""; // No tenemos un numero de telefono asignado
 float transacciones[MAXIMO_DE_TRANSACCIONES];
 int numTransacciones = 0;
 
-//Usaremos esta funcion para cambiar el color de nuestro texto
+/*Con esta funcion podremos usar colores en nuestro codigo*/
 void setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void imprimirLinea() {
+    setColor(6);
+    printf("****************************************\n");
+    setColor(15);
 }
 
 void agregarTransaccion(float monto) {
@@ -25,7 +31,6 @@ void agregarTransaccion(float monto) {
         transacciones[numTransacciones] = monto;
         numTransacciones++;
     } else {
-        //Recorrer la cadena
         for (int i = 1; i < MAXIMO_DE_TRANSACCIONES; i++) {
             transacciones[i - 1] = transacciones[i];
         }
@@ -33,38 +38,10 @@ void agregarTransaccion(float monto) {
     }
 }
 
-// Función para imprimir un cuadro con título y contenido
-void imprimirCuadro(const char* titulo, const char* contenido) {
-    int longitud = 40;
-    setColor(10);
-    //ARRIBA
-    for (int i = 0; i < longitud + 2; i++) printf("*");
-    printf("\n");
-
-    //TITULO
-    printf("* %s", titulo);
-    for (int i = strlen(titulo) + 2; i < longitud; i++) printf(" ");
-    printf(" *\n");
-
-    //DIVISION
-    for (int i = 0; i < longitud + 2; i++) printf("*");
-    printf("\n");
-
-    //CONTENIDO
-    printf("* %s", contenido);
-    for (int i = strlen(contenido) + 2; i < longitud; i++) printf(" ");
-    printf(" *\n");
-
-    //ABAJO
-    for (int i = 0; i < longitud + 2; i++) printf("*");
-    printf("\n");
-    setColor(15);
-}
-
-//capturar datos del usuario
-void capturarDatos(char nombre[], char numeroTarjeta[], int pin) {
+// Con esta funcion capturaremos los datos del usuario
+void capturarDatos(char nombre[], char numeroTarjeta[], int *pin) {
     system("cls");
-    imprimirCuadro("BIENVENIDO AL CAJERO AUTOMÁTICO", "");
+    imprimirLinea();
 
     setColor(10);
     printf("Por favor ingrese su nombre: ");
@@ -84,136 +61,198 @@ void capturarDatos(char nombre[], char numeroTarjeta[], int pin) {
     setColor(14);
     printf("Por favor ingrese su pin: ");
     setColor(15);
-    pin = 0;
+    *pin = 0;
     char cadena;
     while ((cadena = getch()) != '\r') {
         if (cadena >= '0' && cadena <= '9') {
-            pin = pin * 10 + (cadena - '0');
+            *pin = *pin * 10 + (cadena - '0');
             printf("*");
         }
     }
     printf("\n");
 
-    //Verificamos los datos
-    if (strcmp(numeroTarjeta, NUMERO_DE_TARJETA_VALIDO) == 0 && pin == pin_valido) {
+    // Comprobaremos que los datos ingresados sean correctos
+    if (strcmp(numeroTarjeta, NUMERO_DE_TARJETA_VALIDO) == 0 && *pin == pin_valido) {
         setColor(10);
-        printf("Datos correctos. Bienvenido %s\n", nombre);
+        printf("Datos correctos. Bienvenido %s\n", nombre); //Caso correcto
         setColor(15);
     } else {
         setColor(4);
-        printf("Los datos ingresados son incorrectos, por favor intentelo de nuevo\n");
+        printf("Los datos ingresados son incorrectos, por favor intentelo de nuevo\n"); //Dato incorrecto ingresado
         setColor(15);
         system("pause");
         capturarDatos(nombre, numeroTarjeta, pin);
     }
+
+    imprimirLinea();
 }
 
-//Consultamos saldo
+//Funcion para consultar el saldo
 void consultarSaldo() {
     system("cls");
-    char contenido[50];
-    sprintf(contenido, "Su saldo actual es: $%.2f", saldo);
-    imprimirCuadro("CONSULTA DE SALDO", contenido);
+    imprimirLinea();
+    printf("Su saldo actual es: $%.2f\n", saldo);
+    imprimirLinea();
 }
 
-//Estado de cuenta
+//Esado de cuenta
 void estadoDeCuenta() {
     system("cls");
-    char contenido[200];
-    sprintf(contenido, "Nombre: %s\nSaldo actual: $%.2f\nNúmero Telefónico: %s\n", NOMBRE_VALIDO, saldo, numeroTelefono);
-    imprimirCuadro("ESTADO DE CUENTA", contenido);
+    imprimirLinea();
+    printf("Nombre: %s\n", NOMBRE_VALIDO);
+    printf("Saldo actual: $%.2f\n", saldo);
+    printf("Numero Telefonico: %s\n", numeroTelefono);
+    printf("\nTransacciones recientes:\n");
 
-    printf("Transacciones recientes:\n");
     if (numTransacciones == 0) {
-        printf("No hay transacciones aún\n");
+        printf("No hay transacciones aun\n");
     } else {
         for (int i = 0; i < numTransacciones; i++) {
-            printf("Transacción %d: $%.2f\n", i + 1, transacciones[i]);
+            printf("Transaccion %d: $%.2f\n", i + 1, transacciones[i]);
         }
     }
+    imprimirLinea();
 }
 
-//Ultimas transacciones
+// Funcion para mostrar transacciones recientes
 void mostrarTransaccionesRecientes() {
     system("cls");
-    imprimirCuadro("TRANSACCIONES RECIENTES", "");
+    imprimirLinea();
     estadoDeCuenta();
+    imprimirLinea();
 }
 
-//retirar dinero
+// Funcion para retirar dinero
 void retirarDinero() {
     system("cls");
-    imprimirCuadro("RETIRO DE DINERO", "");
+    imprimirLinea();
 
     if (numTransacciones >= MAXIMO_DE_TRANSACCIONES) {
         setColor(12);
-        printf("Ha alcanzado el límite de transacciones diarias.\n");
+        printf("Ha alcanzado el limite de transacciones diarias.\n"); //Limite de transacciones diarias limitado a 10
         setColor(15);
+        imprimirLinea();
         return;
     }
 
     float monto;
-    printf("Ingrese el monto a retirar (máximo $1000): ");
+    printf("Ingrese el monto a retirar (maximo $1000): "); //Podremos retirar un maximo de $1000 POR TRANSACCION
     scanf("%f", &monto);
 
     if (monto > 1000) {
         setColor(12);
-        printf("El monto excede el límite por transacción.\n");
+        printf("El monto excede el limite por transaccion.\n");
         setColor(15);
+        imprimirLinea();
         return;
     }
     if (monto > saldo) {
         setColor(12);
-        printf("Fondos insuficientes.\n");
+        printf("Fondos insuficientes.\n"); //No contamos con el suficiente dinero
         setColor(15);
+        imprimirLinea();
         return;
     }
 
     saldo -= monto;
     agregarTransaccion(-monto);
     setColor(10);
-    printf("Transacción exitosa. Su nuevo saldo es: $%.2f\n", saldo);
+    printf("Transaccion exitosa. Su nuevo saldo es: $%.2f\n", saldo);
     setColor(15);
+    imprimirLinea();
 }
 
-// Funcion para cambiar el PIN
+//Esta funcion nos permitira retirar dinero de manera mas rapida
+void retiroRapido() {
+    system("cls");
+    imprimirLinea();
+    setColor(14);
+    printf("----Seleccione una cantidad para retiro rapido----\n");
+    printf("1. $20\n");
+    printf("2. $50\n");
+    printf("3. $100\n");
+    printf("Seleccione una opcion: ");
+    setColor(15);
+    int opcion;
+    scanf("%d", &opcion);
+
+    float monto;
+    switch (opcion) {
+        case 1:
+            monto = 20;
+            break;
+        case 2:
+            monto = 50;
+            break;
+        case 3:
+            monto = 100;
+            break;
+        default:
+            setColor(12);
+            printf("Opcion no valida. Intente de nuevo.\n");
+            setColor(15);
+            imprimirLinea();
+            return;
+    }
+    //Comprobamos que contemos con dinero suficiente
+    if (monto > saldo) {
+        setColor(12);
+        printf("Fondos insuficientes.\n");
+        setColor(15);
+        imprimirLinea();
+        return;
+    }
+
+    saldo -= monto;
+    agregarTransaccion(-monto);
+    setColor(10);
+    printf("Transaccion exitosa. Su nuevo saldo es: $%.2f\n", saldo);
+    setColor(15);
+    imprimirLinea();
+}
+
+//Con esta funcion cambiaremos nuestro pin inicial por uno personalizado
 void cambiarPin() {
     system("cls");
-    imprimirCuadro("CAMBIAR PIN", "");
+    imprimirLinea();
 
     int nuevoPin;
+    setColor(1);
     printf("Ingrese su nuevo PIN: ");
+    setColor(15);
     scanf("%d", &nuevoPin);
     pin_valido = nuevoPin;
     setColor(10);
     printf("PIN cambiado exitosamente.\n");
     setColor(15);
+    imprimirLinea();
 }
 
-//Registrar numero telefonico
+//Con esta funcion podremos agregar nuestro numero telefonico en caso de ser neceaario
 void registrarTelefono() {
     system("cls");
-    imprimirCuadro("REGISTRAR TELÉFONO", "");
+    imprimirLinea();
 
-    printf("Ingrese su número de teléfono: ");
+    printf("Ingrese su numero de telefono: ");
     scanf("%s", numeroTelefono);
     setColor(10);
-    printf("Número registrado exitosamente.\n");
+    printf("Numero registrado exitosamente.\n");
     setColor(15);
+    imprimirLinea();
 }
 
-//Mostramos las opciones adicionales
+//Mostraremos mas opciones que no estan en el menu principal
 void mostrarMasOpciones() {
     int opcion;
     do {
         system("cls");
-        imprimirCuadro("MÁS OPCIONES", "");
-
+        imprimirLinea();
+        setColor(2);
         printf("1. Cambiar su PIN\n");
-        printf("2. Registrar su número de teléfono\n");
+        printf("2. Registrar su numero de telefono\n");
         printf("3. Generar un estado de cuenta detallado\n");
-        printf("4. Regresar al menú principal\n");
-        printf("Seleccione una opción: ");
+        printf("4. Regresar al menu principal\n");
+        printf("Seleccione una opcion: ");
         scanf("%d", &opcion);
 
         switch (opcion) {
@@ -231,29 +270,32 @@ void mostrarMasOpciones() {
                 break;
             default:
                 setColor(12);
-                printf("Opción no válida. Intente de nuevo.\n");
+                printf("Opcion no valida. Intente de nuevo.\n");
                 setColor(15);
                 break;
         }
         if (opcion != 4) {
             system("pause");
         }
+        imprimirLinea();
     } while (opcion != 4);
 }
 
-//Mostramos el menu
+//Funcionq que llama al menu de opciones basicas
 void mostrarMenu() {
     int opcion;
     do {
         system("cls");
-        imprimirCuadro("MENÚ PRINCIPAL", "");
-
+        imprimirLinea();
+        setColor(11);
         printf("1. Consultar su saldo\n");
-        printf("2. Mostrar últimas transacciones\n");
+        printf("2. Mostrar ultimas transacciones\n");
         printf("3. Retirar dinero\n");
-        printf("4. Más opciones\n");
-        printf("5. Salir y cerrar sesión\n");
-        printf("Seleccione una opción: ");
+        printf("4. Retiro rapido\n");
+        printf("5. Mas opciones\n");
+        printf("6. Salir y cerrar sesion\n");
+        printf("Seleccione una opcion: ");
+        setColor(15);
         scanf("%d", &opcion);
 
         switch (opcion) {
@@ -267,36 +309,39 @@ void mostrarMenu() {
                 retirarDinero();
                 break;
             case 4:
-                mostrarMasOpciones();
+                retiroRapido();
                 break;
             case 5:
+                mostrarMasOpciones();
+                break;
+            case 6:
                 setColor(12);
-                printf("Saliendo y cerrando sesión...\n");
+                printf("Saliendo y cerrando sesion...\n");
                 setColor(15);
                 break;
             default:
                 setColor(12);
-                printf("Opción no válida. Intente de nuevo.\n");
+                printf("Opcion no valida. Intente de nuevo.\n");
                 setColor(15);
                 break;
         }
-        if (opcion != 5) {
+        if (opcion != 6) {
             system("pause");
         }
-    } while (opcion != 5);
+        imprimirLinea();
+    } while (opcion != 6);
 }
 
-// Función principal
 int main() {
     char nombre[50];
     char numeroTarjeta[20];
     int pin;
-
     numTransacciones = 0;
-    saldo = 10000;
+    saldo = 1000.0;
 
-    capturarDatos(nombre, numeroTarjeta, pin);
-    mostrarMenu();
-
+    while (1) {
+        capturarDatos(nombre, numeroTarjeta, &pin);
+        mostrarMenu();
+    }
     return 0;
 }
